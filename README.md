@@ -1,40 +1,67 @@
-<<<<<<< HEAD
-# Budget Tracker
-=======
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Le Grand Livre — Suivi de budget
 
-## Getting Started
+Application full-stack de gestion de budget personnel : suivi des dépenses et revenus, tableau de bord avec graphiques, objectifs d'épargne avec suivi de progression.
 
-First, run the development server:
+**[Démo en ligne](https://ton-url-vercel.vercel.app)**
 
-```bash
+## Aperçu
+
+- Authentification (NextAuth v5, mots de passe hachés avec bcrypt)
+- CRUD complet des transactions et catégories, avec filtres et export CSV
+- Tableau de bord avec graphiques (évolution mensuelle, répartition par catégorie) via Recharts
+- Objectifs d'épargne avec contributions incrémentales et jauge de progression
+- Thème clair/sombre avec bascule manuelle persistante
+- Interface entièrement responsive, testée mobile/tablette/desktop
+
+## Stack technique
+
+**Frontend** — Next.js 16 (App Router), TypeScript, Tailwind CSS v4, React Hook Form, Recharts
+
+**Backend** — Server Actions Next.js, Drizzle ORM, PostgreSQL (Neon serverless), NextAuth.js v5, Zod / drizzle-zod
+
+**Tests** — Jest, React Testing Library, tests d'intégration contre la base réelle (isolation des données par utilisateur)
+
+## Choix d'architecture
+
+- **Montants stockés en `numeric` Postgres**, convertis en centimes entiers pour tout calcul métier (`lib/utils/money.ts`) — élimine les erreurs d'arithmétique flottante sur des sommes d'argent.
+- **Logique métier isolée en fonctions pures** (`lib/services/`), testées indépendamment de la base de données — couverture à 100 % sur les calculs d'agrégation et de progression.
+- **Isolation stricte par utilisateur** vérifiée par un test d'intégration réel (pas de mock) : chaque requête de lecture/écriture filtre systématiquement par `userId` extrait de la session serveur, jamais transmis par le client.
+- **Validation en double** : côté client (React Hook Form + Zod, retour instantané) et côté serveur (Server Actions, jamais de confiance dans l'input client).
+
+## Lancer le projet en local
+
+\`\`\`bash
+git clone https://github.com/andrianomenafabrice-jpg/budget-tracker.git
+cd budget-tracker
+npm install
+\`\`\`
+
+Crée un fichier `.env.local` à la racine :
+
+\`\`\`
+DATABASE_URL=
+DATABASE_URL_UNPOOLED=
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3000
+\`\`\`
+
+(nécessite un projet [Neon](https://neon.tech) gratuit pour la base PostgreSQL)
+
+\`\`\`bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tests
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+\`\`\`bash
+npm test                    # tests unitaires et composants
+npm run test:coverage       # avec rapport de couverture
+npm run test:integration    # tests d'intégration (nécessite une base réelle)
+\`\`\`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Auteur
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
->>>>>>> develop
+Andrianomena Fabrice (Nomena)
+[LinkedIn](https://linkedin.com/in/ralaiarisoa-andrianomena-fabrice-a3a964431) · [GitHub](https://github.com/andrianomenafabrice-jpg)
