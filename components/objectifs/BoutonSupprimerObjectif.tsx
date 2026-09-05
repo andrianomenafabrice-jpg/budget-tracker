@@ -2,14 +2,21 @@
 
 import { useTransition } from 'react';
 import { supprimerObjectif } from '@/lib/actions/objectif.actions';
+import { useConfirmation } from '@/components/ui/ConfirmProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 
 export function BoutonSupprimerObjectif({ objectifId }: { objectifId: string }) {
+  const demanderConfirmation = useConfirmation();
+  const afficherToast = useToast();
   const [enSuppression, demarrerSuppression] = useTransition();
 
-  function gererSuppression() {
-    if (!window.confirm('Supprimer définitivement cet objectif ?')) return;
+  async function gererSuppression() {
+    const confirme = await demanderConfirmation('Supprimer définitivement cet objectif ?');
+    if (!confirme) return;
+
     demarrerSuppression(async () => {
-      await supprimerObjectif(objectifId);
+      const resultat = await supprimerObjectif(objectifId);
+      afficherToast(resultat.success ? 'Objectif supprimé' : resultat.error.message, resultat.success ? 'succes' : 'erreur');
     });
   }
 

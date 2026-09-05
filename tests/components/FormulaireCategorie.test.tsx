@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { renderAvecProviders as render } from '../test-utils';
 import { FormulaireCategorie } from '../../components/transactions/FormulaireCategorie';
 
 jest.mock('../../lib/actions/categorie.actions', () => ({

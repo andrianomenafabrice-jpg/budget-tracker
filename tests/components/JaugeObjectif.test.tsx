@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { JaugeObjectif } from '@/components/objectifs/JaugeObjectif';
+import { JaugeObjectif } from '../../components/objectifs/JaugeObjectif';
 
 describe('JaugeObjectif', () => {
   it('affiche 0 % et aucun segment rempli pour un objectif tout juste créé', () => {

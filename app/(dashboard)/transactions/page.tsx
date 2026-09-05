@@ -11,6 +11,7 @@ import { Pagination } from '@/components/transactions/Pagination';
 import { BoutonExportCsv } from '@/components/transactions/BoutonExportCsv';
 
 export const metadata = {
+  title: 'Transactions',
   robots: { index: false, follow: false },
 };
 
@@ -18,11 +19,7 @@ const TAILLE_PAGE = 20;
 
 type SearchParamsBruts = { [cle: string]: string | string[] | undefined };
 
-export default async function PageTransactions({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParamsBruts>;
-}) {
+export default async function PageTransactions({ searchParams }: { searchParams: Promise<SearchParamsBruts> }) {
   const searchParamsResolus = await searchParams;
   const filtres = parserFiltresTransactions(searchParamsResolus);
 
@@ -43,7 +40,7 @@ export default async function PageTransactions({
     db.select().from(categories).where(eq(categories.userId, userId)),
     db.query.transactions.findMany({
       where: clauseWhere,
-      orderBy: (transactions, { desc }) => [desc(transactions.date)],
+      orderBy: (t, { desc }) => [desc(t.date)],
       with: { categorie: true },
       limit: TAILLE_PAGE,
       offset: decalage,
@@ -53,14 +50,14 @@ export default async function PageTransactions({
 
   const totalPages = Math.max(1, Math.ceil(total / TAILLE_PAGE));
 
-  const transactionsAffichees = mesTransactions.map((transaction) => ({
-    id: transaction.id,
-    type: transaction.type,
-    montant: transaction.montant,
-    description: transaction.description,
-    date: transaction.date,
-    categorieNom: transaction.categorie.nom,
-    categorieCouleur: transaction.categorie.couleur,
+  const transactionsAffichees = mesTransactions.map((t) => ({
+    id: t.id,
+    type: t.type,
+    montant: t.montant,
+    description: t.description,
+    date: t.date,
+    categorieNom: t.categorie.nom,
+    categorieCouleur: t.categorie.couleur,
   }));
 
   const parametresPourPagination: Record<string, string | undefined> = {
@@ -72,43 +69,33 @@ export default async function PageTransactions({
 
   return (
     <div className="space-y-10">
-      <section>
-        <h1 className="font-display text-2xl font-bold text-texte-principal dark:text-texte-inverse">
-          Transactions
-        </h1>
+      <div>
+        <h1 className="text-texte-principal dark:text-texte-inverse">Transactions</h1>
         <p className="mt-1 font-sans text-sm text-texte-principal/70 dark:text-texte-inverse/70">
           Enregistre une dépense ou un revenu.
         </p>
-      </section>
+      </div>
 
-      <section>
-        <h2 className="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-texte-principal/60 dark:text-texte-inverse/60">
-          Catégories
-        </h2>
+      <section className="space-y-3">
+        <h2 className="text-texte-principal dark:text-texte-inverse">Catégories</h2>
         <FormulaireCategorie />
       </section>
 
-      <section>
-        <h2 className="mb-3 font-sans text-sm font-semibold uppercase tracking-wide text-texte-principal/60 dark:text-texte-inverse/60">
-          Nouvelle transaction
-        </h2>
+      <section className="space-y-3">
+        <h2 className="text-texte-principal dark:text-texte-inverse">Nouvelle transaction</h2>
         <FormulaireTransaction categories={mesCategories} />
       </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-texte-principal/60 dark:text-texte-inverse/60">
-            Historique {total > 0 && `(${total} au total)`}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-texte-principal dark:text-texte-inverse">
+            Historique {total > 0 && <span className="font-sans text-sm font-normal text-texte-principal/60 dark:text-texte-inverse/60">({total} au total)</span>}
           </h2>
           <BoutonExportCsv />
         </div>
         <FiltresTransactions categories={mesCategories} />
-        <div className="mt-4">
-          <ListeTransactions transactions={transactionsAffichees} />
-        </div>
-        <div className="mt-6">
-          <Pagination pageActuelle={filtres.page} totalPages={totalPages} parametresActuels={parametresPourPagination} />
-        </div>
+        <ListeTransactions transactions={transactionsAffichees} />
+        <Pagination pageActuelle={filtres.page} totalPages={totalPages} parametresActuels={parametresPourPagination} />
       </section>
     </div>
   );

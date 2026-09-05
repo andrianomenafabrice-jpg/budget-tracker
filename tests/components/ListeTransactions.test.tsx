@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderAvecProviders as render } from '../test-utils';
 import { ListeTransactions } from '../../components/transactions/ListeTransactions';
 
 jest.mock('../../lib/actions/transaction.actions', () => ({

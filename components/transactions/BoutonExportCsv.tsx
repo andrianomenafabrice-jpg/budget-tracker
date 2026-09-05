@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { exporterTransactionsCsv } from '@/lib/actions/export.actions';
+import { useToast } from '@/components/ui/ToastProvider';
 
 export function BoutonExportCsv() {
   const searchParams = useSearchParams();
+  const afficherToast = useToast();
   const [enCours, setEnCours] = useState(false);
 
   async function gererExport() {
@@ -19,7 +21,7 @@ export function BoutonExportCsv() {
       });
 
       if (!resultat.success) {
-        window.alert(resultat.error.message);
+        afficherToast(resultat.error.message, 'erreur');
         return;
       }
 
@@ -31,6 +33,7 @@ export function BoutonExportCsv() {
       lien.download = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
       lien.click();
       URL.revokeObjectURL(url);
+      afficherToast('Export téléchargé');
     } finally {
       setEnCours(false);
     }
