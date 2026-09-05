@@ -2,8 +2,6 @@
 
 Application full-stack de gestion de budget personnel : suivi des dépenses et revenus, tableau de bord avec graphiques, objectifs d'épargne avec suivi de progression.
 
-**[Démo en ligne](https://ton-url-vercel.vercel.app)**
-
 ## Aperçu
 
 - Authentification (NextAuth v5, mots de passe hachés avec bcrypt)
