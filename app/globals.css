@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-encre-nuit: #1B2420;
+  --color-encre-carte: #222E28;
+  --color-papier-registre: #E9E4D2;
+  --color-papier-carte: #F1ECDB;
+  --color-texte-principal: #23201B;
+  --color-texte-inverse: #EDE8DA;
+  --color-encre-credit: #1E6B4E;
+  --color-encre-debit: #8C2F39;
+  --color-encre-objectif: #1F5C6B;
+  --color-marge-registre: #A33B3B;
+
+  --font-display: 'Zilla Slab', serif;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+:root {
+  --color-graphique-texte: var(--color-texte-principal);
+  color-scheme: light;
+}
+
+.dark {
+  --color-graphique-texte: var(--color-texte-inverse);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-papier-registre);
+  color: var(--color-texte-principal);
+  font-family: var(--font-sans);
+}
+
+.dark body {
+  background-color: var(--color-encre-nuit);
+  color: var(--color-texte-inverse);
+}
+
+@layer base {
+  h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+  }
+  h2 {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--color-encre-objectif);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .surface-carte {
+    background-color: var(--color-papier-carte);
+    border-left: 3px solid var(--color-marge-registre);
+  }
+  .dark .surface-carte {
+    background-color: var(--color-encre-carte);
+  }
+}
