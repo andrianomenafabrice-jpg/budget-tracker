@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-encre-nuit: #1B2420;
+  --color-papier-registre: #E9E4D2;
+  --color-texte-principal: #23201B;
+  --color-texte-inverse: #EDE8DA;
+  --color-encre-credit: #1E6B4E;
+  --color-encre-debit: #8C2F39;
+  --color-encre-objectif: #1F5C6B;
+  --color-marge-registre: #A33B3B;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: 'Zilla Slab', serif;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-papier-registre);
+  color: var(--color-texte-principal);
+  font-family: var(--font-sans);
+}
+
+.dark body {
+  background-color: var(--color-encre-nuit);
+  color: var(--color-texte-inverse);
 }
