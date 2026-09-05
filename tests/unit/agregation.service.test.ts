@@ -102,3 +102,38 @@ describe('calculerRepartitionParCategorie', () => {
     expect(resultat).toEqual([{ categorieId: 'cat-1', nom: 'Alimentation', couleur: '#4F6B4A', montant: 10 }]);
   });
 });
+
+
+import { calculerEvolutionMensuelle, derniersMois } from '@/lib/services/agregation.service';
+
+describe('derniersMois', () => {
+  it('génère les 3 derniers mois dans l’ordre chronologique, du plus ancien au plus récent', () => {
+    const reference = new Date('2025-06-15T00:00:00Z');
+    expect(derniersMois(3, reference)).toEqual(['2025-04', '2025-05', '2025-06']);
+  });
+
+  it('gère correctement le passage à l’année précédente', () => {
+    const reference = new Date('2025-02-10T00:00:00Z');
+    expect(derniersMois(3, reference)).toEqual(['2024-12', '2025-01', '2025-02']);
+  });
+});
+
+describe('calculerEvolutionMensuelle', () => {
+  it('retourne une agrégation par mois, y compris des mois sans aucune transaction', () => {
+    const reference = new Date('2025-06-15T00:00:00Z');
+    const transactions: TransactionPourCalcul[] = [
+      {
+        categoryId: 'cat-1',
+        type: 'revenu',
+        montant: '1000.00',
+        date: new Date('2025-06-05T00:00:00Z'),
+      },
+    ];
+
+    const resultat = calculerEvolutionMensuelle(transactions, 3, reference);
+
+    expect(resultat).toHaveLength(3);
+    expect(resultat[0]).toEqual({ mois: '2025-04', totalRevenus: 0, totalDepenses: 0, solde: 0 });
+    expect(resultat[2]).toEqual({ mois: '2025-06', totalRevenus: 1000, totalDepenses: 0, solde: 1000 });
+  });
+});

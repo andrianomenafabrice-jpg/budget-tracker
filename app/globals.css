@@ -15,6 +15,16 @@
   --font-mono: 'IBM Plex Mono', monospace;
 }
 
+:root {
+  --color-graphique-texte: var(--color-texte-principal);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-graphique-texte: var(--color-texte-inverse);
+  }
+}
+
 body {
   background-color: var(--color-papier-registre);
   color: var(--color-texte-principal);

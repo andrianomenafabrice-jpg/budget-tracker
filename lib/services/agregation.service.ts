@@ -96,3 +96,23 @@ export function calculerRepartitionParCategorie(
 
   return resultat;
 }
+
+/** Génère la liste des mois "YYYY-MM", du plus ancien au plus récent, se terminant au mois donné. */
+export function derniersMois(nombreDeMois: number, moisDeReference: Date = new Date()): string[] {
+  const mois: string[] = [];
+  for (let i = nombreDeMois - 1; i >= 0; i--) {
+    const date = new Date(Date.UTC(moisDeReference.getUTCFullYear(), moisDeReference.getUTCMonth() - i, 1));
+    mois.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`);
+  }
+  return mois;
+}
+
+export function calculerEvolutionMensuelle(
+  transactions: TransactionPourCalcul[],
+  nombreDeMois: number,
+  moisDeReference: Date = new Date()
+): AgregationMensuelle[] {
+  return derniersMois(nombreDeMois, moisDeReference).map((mois) =>
+    calculerAgregationMensuelle(transactions, mois)
+  );
+}
