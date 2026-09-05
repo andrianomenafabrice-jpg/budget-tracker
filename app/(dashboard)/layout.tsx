@@ -16,6 +16,9 @@ export default function LayoutTableauDeBord({ children }: { children: React.Reac
             <Link href="/transactions" className="text-texte-principal hover:underline dark:text-texte-inverse">
               Transactions
             </Link>
+            <Link href="/objectifs" className="text-texte-principal hover:underline dark:text-texte-inverse">
+              Objectifs
+            </Link>
             <form
               action={async () => {
                 'use server';

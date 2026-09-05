@@ -1,12 +1,7 @@
 import { z } from 'zod';
 import { createInsertSchema } from 'drizzle-zod';
 import { transactions } from '@/lib/db/schema';
-
-const montantSchema = z
-  .string()
-  .trim()
-  .regex(/^\d+(\.\d{1,2})?$/, 'Montant invalide (ex. 19.99, 2 décimales max)')
-  .refine((valeur) => Number(valeur) > 0, 'Le montant doit être supérieur à 0');
+import { montantSchema } from './montant.schema';
 
 export const transactionSchema = createInsertSchema(transactions, {
   montant: () => montantSchema,
