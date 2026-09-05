@@ -1,9 +1,10 @@
 'use client';
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import type { TooltipContentProps } from 'recharts';
 import type { RepartitionCategorie } from '@/lib/services/agregation.service';
 
-function InfobulleRepartition({ active, payload }: any) {
+function InfobulleRepartition({ active, payload }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null;
   const donnee = payload[0].payload as RepartitionCategorie;
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import type { TooltipContentProps } from 'recharts';
 import type { AgregationMensuelle } from '@/lib/services/agregation.service';
 
 function formaterMoisCourt(mois: string): string {
@@ -9,17 +10,17 @@ function formaterMoisCourt(mois: string): string {
   return date.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'UTC' });
 }
 
-function InfobulleGraphique({ active, payload, label }: any) {
+function InfobulleGraphique({ active, payload, label }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null;
 
   return (
     <div className="border border-texte-principal/30 bg-papier-registre px-3 py-2 font-mono text-xs dark:bg-encre-nuit">
       <p className="mb-1 font-sans font-semibold text-texte-principal dark:text-texte-inverse">
-        {formaterMoisCourt(label)}
+        {formaterMoisCourt(String(label))}
       </p>
-      {payload.map((entree: any) => (
+      {payload.map((entree) => (
         <p key={entree.dataKey} style={{ color: entree.color }} className="tabular-nums">
-          {entree.name} : {entree.value.toFixed(2)} €
+          {entree.name} : {Number(entree.value).toFixed(2)} €
         </p>
       ))}
     </div>

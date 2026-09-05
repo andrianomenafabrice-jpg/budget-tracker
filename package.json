@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "jest tests/unit tests/components",
+    "test:watch": "jest tests/unit tests/components --watch",
+    "test:coverage": "jest tests/unit tests/components --coverage",
+   "test:integration": "jest tests/integration --runInBand --testTimeout=30000 --forceExit",
+    "test:all": "jest --runInBand"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -29,6 +31,7 @@
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -1,21 +1,22 @@
 'use server';
 
-import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
-import { getDb } from '@/lib/db';
-import { transactions, categories } from '@/lib/db/schema';
 import { transactionSchema } from '@/lib/validations/transaction.schema';
+import {
+  creerTransactionPourUtilisateur,
+  modifierTransactionPourUtilisateur,
+  supprimerTransactionPourUtilisateur,
+} from '@/lib/repositories/transaction.repository';
 import type { ResultatAction } from '@/lib/types/action';
 
-async function recupererCategoriePourUtilisateur(categoryId: string, userId: string) {
-  const db = getDb();
-  const [categorie] = await db
-    .select()
-    .from(categories)
-    .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)))
-    .limit(1);
-  return categorie ?? null;
+function extraireDonneesBrutes(formData: FormData) {
+  return {
+    categoryId: formData.get('categoryId'),
+    montant: formData.get('montant'),
+    description: formData.get('description') || undefined,
+    date: formData.get('date'),
+  };
 }
 
 export async function creerTransaction(
@@ -27,14 +28,7 @@ export async function creerTransaction(
     return { success: false, error: { code: 'NON_AUTHENTIFIE', message: 'Session expirée, reconnecte-toi.' } };
   }
 
-  const donneesBrutes = {
-    categoryId: formData.get('categoryId'),
-    montant: formData.get('montant'),
-    description: formData.get('description') || undefined,
-    date: formData.get('date'),
-  };
-
-  const resultat = transactionSchema.safeParse(donneesBrutes);
+  const resultat = transactionSchema.safeParse(extraireDonneesBrutes(formData));
   if (!resultat.success) {
     return {
       success: false,
@@ -42,26 +36,14 @@ export async function creerTransaction(
     };
   }
 
-  const userId = session.user.id;
-  const categorie = await recupererCategoriePourUtilisateur(resultat.data.categoryId, userId);
-  if (!categorie) {
+  const reponse = await creerTransactionPourUtilisateur(session.user.id, resultat.data);
+  if (!reponse.trouve) {
     return { success: false, error: { code: 'CATEGORIE_INTROUVABLE', message: 'Catégorie invalide' } };
   }
 
-  const db = getDb();
-  const [nouvelleTransaction] = await db
-    .insert(transactions)
-    .values({
-      ...resultat.data,
-      userId,
-      type: categorie.type, // dérivé de la catégorie, jamais resaisi (section 3)
-    })
-    .returning({ id: transactions.id });
-
   revalidatePath('/transactions');
   revalidatePath('/dashboard');
-
-  return { success: true, data: { id: nouvelleTransaction.id } };
+  return { success: true, data: { id: reponse.id } };
 }
 
 export async function modifierTransaction(
@@ -74,14 +56,7 @@ export async function modifierTransaction(
     return { success: false, error: { code: 'NON_AUTHENTIFIE', message: 'Session expirée, reconnecte-toi.' } };
   }
 
-  const donneesBrutes = {
-    categoryId: formData.get('categoryId'),
-    montant: formData.get('montant'),
-    description: formData.get('description') || undefined,
-    date: formData.get('date'),
-  };
-
-  const resultat = transactionSchema.safeParse(donneesBrutes);
+  const resultat = transactionSchema.safeParse(extraireDonneesBrutes(formData));
   if (!resultat.success) {
     return {
       success: false,
@@ -89,26 +64,13 @@ export async function modifierTransaction(
     };
   }
 
-  const userId = session.user.id;
-  const categorie = await recupererCategoriePourUtilisateur(resultat.data.categoryId, userId);
-  if (!categorie) {
-    return { success: false, error: { code: 'CATEGORIE_INTROUVABLE', message: 'Catégorie invalide' } };
-  }
-
-  const db = getDb();
-  const misesAJour = await db
-    .update(transactions)
-    .set({ ...resultat.data, type: categorie.type })
-    .where(and(eq(transactions.id, transactionId), eq(transactions.userId, userId)))
-    .returning({ id: transactions.id });
-
-  if (misesAJour.length === 0) {
+  const reponse = await modifierTransactionPourUtilisateur(session.user.id, transactionId, resultat.data);
+  if (!reponse.trouve) {
     return { success: false, error: { code: 'INTROUVABLE', message: 'Transaction introuvable' } };
   }
 
   revalidatePath('/transactions');
   revalidatePath('/dashboard');
-
   return { success: true, data: null };
 }
 
@@ -118,20 +80,12 @@ export async function supprimerTransaction(transactionId: string): Promise<Resul
     return { success: false, error: { code: 'NON_AUTHENTIFIE', message: 'Session expirée, reconnecte-toi.' } };
   }
 
-  const db = getDb();
-  const userId = session.user.id;
-
-  const resultat = await db
-    .delete(transactions)
-    .where(and(eq(transactions.id, transactionId), eq(transactions.userId, userId)))
-    .returning({ id: transactions.id });
-
-  if (resultat.length === 0) {
+  const reponse = await supprimerTransactionPourUtilisateur(session.user.id, transactionId);
+  if (!reponse.trouve) {
     return { success: false, error: { code: 'INTROUVABLE', message: 'Transaction introuvable' } };
   }
 
   revalidatePath('/transactions');
   revalidatePath('/dashboard');
-
   return { success: true, data: null };
 }
